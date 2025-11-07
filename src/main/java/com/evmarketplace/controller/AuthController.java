@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -48,21 +50,25 @@ public class AuthController {
                     loginRequest.getPassword()
                 )
             );
-            
+
             User user = (User) authentication.getPrincipal();
             String token = jwtUtil.generateToken(user.getUsername());
-            
+
             LoginResponse response = new LoginResponse();
             response.setToken(token);
             response.setUserType(user.getRole().toString());
             response.setUserId(user.getId());
             response.setUsername(user.getUsername());
-            
+
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
+        } catch (BadCredentialsException e) {
             Map<String, String> error = new HashMap<>();
             error.put("error", "Invalid username or password");
-            return ResponseEntity.badRequest().body(error);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Authentication failed");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
     

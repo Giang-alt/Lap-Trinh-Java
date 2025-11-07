@@ -71,44 +71,20 @@ npm start
 
 Frontend sẽ chạy tại: http://localhost:3000
 
-## Chức năng đã triển khai
-
-### Mức Dễ (Easy Level)
-
-#### 1. Chức năng cho Data Consumer
-- ✅ Tìm kiếm & khám phá dữ liệu cơ bản
-- ✅ Danh mục dữ liệu đơn giản
-- ✅ Bộ lọc cơ bản (thời gian, khu vực, loại dữ liệu)
-- ✅ Giao diện tìm kiếm đơn giản
-- ✅ Xem chi tiết gói dữ liệu
-
-#### 2. Chức năng cho Data Provider
-- ✅ Đăng ký & quản lý nguồn dữ liệu cơ bản
-- ✅ Dashboard quản lý gói dữ liệu
-- ✅ Giao diện quản lý đơn giản
-- ✅ Xem thống kê cơ bản
-
-#### 3. Chức năng cho Admin
-- ✅ Quản lý người dùng cơ bản
-- ✅ Đăng ký/đăng nhập
-- ✅ Phân quyền cơ bản
-- ✅ Quản lý tài khoản
-- ✅ Duyệt gói dữ liệu
-
 ## API Endpoints
 
-### Authentication
+### Authentication - Giang
 - `POST /api/auth/login` - Đăng nhập
 - `POST /api/auth/register/consumer` - Đăng ký Data Consumer
 - `POST /api/auth/register/provider` - Đăng ký Data Provider
 
 ### Data Packages
-- `GET /api/data-packages` - Lấy danh sách gói dữ liệu
-- `GET /api/data-packages/{id}` - Lấy chi tiết gói dữ liệu
-- `GET /api/data-packages/search` - Tìm kiếm gói dữ liệu
-- `POST /api/data-packages` - Tạo gói dữ liệu mới
-- `PUT /api/data-packages/{id}` - Cập nhật gói dữ liệu
-- `DELETE /api/data-packages/{id}` - Xóa gói dữ liệu
+- `GET /api/data-packages` - Lấy danh sách gói dữ liệu - Giang
+- `GET /api/data-packages/{id}` - Lấy chi tiết gói dữ liệu - Long
+- `GET /api/data-packages/search` - Tìm kiếm gói dữ liệu - Ngân
+- `POST /api/data-packages` - Tạo gói dữ liệu mới - Phúc
+- `PUT /api/data-packages/{id}` - Cập nhật gói dữ liệu - Anh
+- `DELETE /api/data-packages/{id}` - Xóa gói dữ liệu - Điền
 
 ## Cấu trúc Database
 

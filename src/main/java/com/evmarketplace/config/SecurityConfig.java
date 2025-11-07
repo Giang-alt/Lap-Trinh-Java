@@ -63,9 +63,9 @@ public class SecurityConfig {
                 .requestMatchers("/data-packages/**").permitAll()
                 .anyRequest().authenticated()
             );
-        
+
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        
+
         return http.build();
     }
 }
