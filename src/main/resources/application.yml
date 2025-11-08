@@ -28,7 +28,7 @@ spring:
       max-request-size: 10MB
 
 jwt:
-  secret: evMarketplaceSecretKey2024
+  secret: evMarketplaceSecretKey2024ForJWTTokenGenerationAndValidationHS512
   expiration: 86400000 # 24 hours
 
 logging:

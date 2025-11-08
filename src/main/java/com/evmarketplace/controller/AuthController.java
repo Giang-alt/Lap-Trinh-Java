@@ -66,8 +66,9 @@ public class AuthController {
             error.put("error", "Invalid username or password");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         } catch (Exception e) {
+            e.printStackTrace(); // Add logging
             Map<String, String> error = new HashMap<>();
-            error.put("error", "Authentication failed");
+            error.put("error", "Authentication failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
