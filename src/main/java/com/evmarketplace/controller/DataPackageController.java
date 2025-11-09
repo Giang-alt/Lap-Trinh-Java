@@ -1,13 +1,11 @@
 package com.evmarketplace.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.evmarketplace.entity.DataPackage;
 import com.evmarketplace.service.DataPackageService;
@@ -35,5 +33,15 @@ public class DataPackageController {
     public ResponseEntity<List<DataPackage>> getAllDataPackages() {
         List<DataPackage> packages = dataPackageService.findAll();
         return ResponseEntity.ok(packages);
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<DataPackage> getDataPackageById(@PathVariable Long id) {
+        Optional<DataPackage> dataPackage = dataPackageService.findById(id);
+
+        if (dataPackage.isPresent()) {
+            return ResponseEntity.ok(dataPackage.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
