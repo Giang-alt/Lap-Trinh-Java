@@ -42,3 +42,7 @@ build/
 *.tar.gz
 *.rar
 
+# Git conflict files
+*.rej
+*.orig
+

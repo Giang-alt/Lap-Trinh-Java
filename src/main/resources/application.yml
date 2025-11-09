@@ -10,7 +10,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/ev_marketplace
     username: root
-    password: ""
+    password: "password"
     
   jpa:
     hibernate:
@@ -27,7 +27,7 @@ spring:
       max-request-size: 10MB
 
 jwt:
-  secret: evMarketplaceSecretKey2024
+  secret: evMarketplaceSecretKey2025ForJWTTokenGenerationAndValidationHS512
   expiration: 86400000 # 24 hours
 logging:
   level:
