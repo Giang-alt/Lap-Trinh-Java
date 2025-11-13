@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid)
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +21,7 @@ import com.evmarketplace.entity.DataPackage.DataType;
 import com.evmarketplace.entity.DataPackage.PackageStatus;
 import com.evmarketplace.entity.DataPackage.PricingModel;
 import com.evmarketplace.service.DataPackageService;
+import com.evmarketplace.dto.CreateDataPackageRequest;
 
 @RestController
 @RequestMapping("/data-packages")
@@ -65,4 +68,17 @@ public class DataPackageController {
 
         return ResponseEntity.ok(results);
     }
+    private final DataPackageService dataPackageService;
+    public DataPackageController(DataPackageService dataPackageService) {
+        this.dataPackageService = dataPackageService;
+    }
+
+    @PostMapping
+    public ResponseEntity<DataPackage> createDataPackage(
+            @Valid @RequestBody CreateDataPackageRequest request) {
+
+        DataPackage created = dataPackageService.createDataPackage(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
 }
+

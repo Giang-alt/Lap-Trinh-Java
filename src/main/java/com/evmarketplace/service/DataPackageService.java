@@ -1,21 +1,21 @@
 package com.evmarketplace.service;
-
-import java.math.BigDecimal; // Đã thêm
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page; // Đã thêm
-import org.springframework.data.domain.Pageable; // Đã thêm
+import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import com.evmarketplace.entity.DataPackage;
-import com.evmarketplace.repository.DataPackageRepository;
-// Bạn cần chắc chắn các Enum này đã được import
+import com.evmarketplace.entity.DataSource;
 import com.evmarketplace.enums.DataType;
 import com.evmarketplace.enums.DataFormat;
 import com.evmarketplace.enums.PackageStatus;
 import com.evmarketplace.enums.PricingModel;
+import com.evmarketplace.repository.DataPackageRepository;
+import com.evmarketplace.repository.DataSourceRepository;
+import com.evmarketplace.request.CreateDataPackageRequest;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+@Service
+@RequiredArgsConstructor
 @Service
 public class DataPackageService {
 
@@ -50,4 +50,25 @@ public class DataPackageService {
                 name, dataType, format, minPrice, maxPrice, status, pricingModel, pageable
         );
     }
+}
+
+private final DataSourceRepository dataSourceRepository;
+
+@Transactional
+public DataPackage createDataPackage(CreateDataPackageRequest request) {
+    DataSource dataSource = dataSourceRepository.findById(request.getDataSourceId())
+            .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy nguồn dữ liệu"));
+
+    DataPackage dataPackage = new DataPackage();
+    dataPackage.setName(request.getName());
+    dataPackage.setDescription(request.getDescription());
+    dataPackage.setDataType(request.getDataType());
+    dataPackage.setFormat(request.getFormat());
+    dataPackage.setPrice(request.getPrice());
+    dataPackage.setPricingModel(request.getPricingModel());
+    dataPackage.setStatus(request.getStatus());
+    dataPackage.setDataSource(dataSource);
+    dataPackage.setSizeInMb(request.getSizeInMb());
+    dataPackage.setCreatedDate(LocalDateTime.now());
+    return dataPackageRepository.save(dataPackage);
 }
