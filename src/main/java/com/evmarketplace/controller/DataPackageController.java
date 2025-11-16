@@ -16,14 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PutMapping;
-
 
 import com.evmarketplace.entity.DataPackage;
 import com.evmarketplace.service.DataPackageService;
 import com.evmarketplace.dto.UpdateDataPackageRequest;
 import jakarta.validation.Valid;
-
 
 @RestController
 @RequestMapping("/data-packages")
@@ -59,6 +56,7 @@ public class DataPackageController {
             try {
                 type = DataPackage.DataType.valueOf(dataType.toUpperCase());
             } catch (IllegalArgumentException e) {
+                // ignore invalid type
             }
         }
         
@@ -67,6 +65,7 @@ public class DataPackageController {
             try {
                 dataFormat = DataPackage.DataFormat.valueOf(format.toUpperCase());
             } catch (IllegalArgumentException e) {
+                // ignore invalid format
             }
         }
         
@@ -93,10 +92,12 @@ public class DataPackageController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<DataPackage> updateDataPackage(@PathVariable Long id, @RequestBody DataPackage dataPackage) {
-        dataPackage.setId(id);
-        DataPackage updatedPackage = dataPackageService.updateDataPackage(dataPackage);
-        return ResponseEntity.ok(updatedPackage);
+    public ResponseEntity<DataPackage> updateDataPackage(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateDataPackageRequest request) {
+        return dataPackageService.updateDataPackage(id, request)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
     
     @DeleteMapping("/{id}")
@@ -105,10 +106,4 @@ public class DataPackageController {
         Map<String, String> response = Map.of("message", "Data package deleted successfully");
         return ResponseEntity.ok(response);
     }
-    @PutMapping("/{id}")
-public ResponseEntity<DataPackage> updateDataPackage(@PathVariable Long id, @Valid @RequestBody UpdateDataPackageRequest request) {
-    return dataPackageService.updateDataPackage(id, request)
-            .map(ResponseEntity::ok)
-            .orElseGet(() -> ResponseEntity.notFound().build());
-}
 }

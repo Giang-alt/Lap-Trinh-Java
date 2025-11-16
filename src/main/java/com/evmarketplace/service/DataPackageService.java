@@ -6,9 +6,12 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import com.evmarketplace.entity.DataPackage;
 import com.evmarketplace.repository.DataPackageRepository;
+import com.evmarketplace.dto.UpdateDataPackageRequest;
 
 @Service
 public class DataPackageService {
@@ -100,4 +103,28 @@ public class DataPackageService {
         
         return results;
     }
+    /**
+ * Cập nhật thông tin của một gói dữ liệu.
+ *
+ * @param id ID của gói dữ liệu cần cập nhật.
+ * @param request DTO chứa thông tin mới.
+ * @return Optional chứa gói dữ liệu đã được cập nhật, hoặc Optional rỗng nếu không tìm thấy.
+ */
+@Transactional
+public Optional<DataPackage> updateDataPackage(Long id, UpdateDataPackageRequest request) {
+    return dataPackageRepository.findById(id).map(existingPackage -> {
+        existingPackage.setName(request.getName());
+        existingPackage.setDescription(request.getDescription());
+        existingPackage.setDataType(request.getDataType());          
+        existingPackage.setFormat(request.getFormat());             
+        existingPackage.setPrice(request.getPrice());
+        existingPackage.setPricingModel(request.getPricingModel());  
+        existingPackage.setStatus(request.getStatus());              
+        existingPackage.setSize(request.getSize());
+        return dataPackageRepository.save(existingPackage);
+    });
+}
+
+
+
 }

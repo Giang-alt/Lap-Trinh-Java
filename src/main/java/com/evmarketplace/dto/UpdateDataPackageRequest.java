@@ -1,9 +1,9 @@
 package com.evmarketplace.dto;
 
-import com.evmarketplace.enums.DataFormat;
-import com.evmarketplace.enums.DataType;
-import com.evmarketplace.enums.PackageStatus;
-import com.evmarketplace.enums.PricingModel;
+import com.evmarketplace.entity.DataPackage.DataType;
+import com.evmarketplace.entity.DataPackage.DataFormat;
+import com.evmarketplace.entity.DataPackage.PricingModel;
+import com.evmarketplace.entity.DataPackage.PackageStatus;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
@@ -34,68 +34,28 @@ public class UpdateDataPackageRequest {
     @Positive(message = "Kích thước file phải là số dương")
     private Long size;
 
-    // Thêm getters và setters cho tất cả các trường
-      public String getName() {
-        return name;
-    }
+    // Getters and setters
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public String getDescription() {
-        return description;
-    }
+    public DataType getDataType() { return dataType; }
+    public void setDataType(DataType dataType) { this.dataType = dataType; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public DataFormat getFormat() { return format; }
+    public void setFormat(DataFormat format) { this.format = format; }
 
-    public DataType getDataType() {
-        return dataType;
-    }
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
 
-    public void setDataType(DataType dataType) {
-        this.dataType = dataType;
-    }
+    public PricingModel getPricingModel() { return pricingModel; }
+    public void setPricingModel(PricingModel pricingModel) { this.pricingModel = pricingModel; }
 
-    public DataFormat getFormat() {
-        return format;
-    }
+    public PackageStatus getStatus() { return status; }
+    public void setStatus(PackageStatus status) { this.status = status; }
 
-    public void setFormat(DataFormat format) {
-        this.format = format;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public PricingModel getPricingModel() {
-        return pricingModel;
-    }
-
-    public void setPricingModel(PricingModel pricingModel) {
-        this.pricingModel = pricingModel;
-    }
-
-    public PackageStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(PackageStatus status) {
-        this.status = status;
-    }
-
-    public Long getSize() {
-        return size;
-    }
-
-    public void setSize(Long size) {
-        this.size = size;
-    }
+    public Long getSize() { return size; }
+    public void setSize(Long size) { this.size = size; }
 }
