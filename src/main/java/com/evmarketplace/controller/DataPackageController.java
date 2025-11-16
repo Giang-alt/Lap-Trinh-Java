@@ -16,9 +16,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 import com.evmarketplace.entity.DataPackage;
 import com.evmarketplace.service.DataPackageService;
+import com.evmarketplace.dto.UpdateDataPackageRequest;
+import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/data-packages")
@@ -100,4 +105,10 @@ public class DataPackageController {
         Map<String, String> response = Map.of("message", "Data package deleted successfully");
         return ResponseEntity.ok(response);
     }
+    @PutMapping("/{id}")
+public ResponseEntity<DataPackage> updateDataPackage(@PathVariable Long id, @Valid @RequestBody UpdateDataPackageRequest request) {
+    return dataPackageService.updateDataPackage(id, request)
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
+}
 }
