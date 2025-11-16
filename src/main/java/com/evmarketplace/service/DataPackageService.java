@@ -1,74 +1,103 @@
 package com.evmarketplace.service;
-import java.time.LocalDateTime;
+
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 import com.evmarketplace.entity.DataPackage;
-import com.evmarketplace.entity.DataSource;
-import com.evmarketplace.enums.DataType;
-import com.evmarketplace.enums.DataFormat;
-import com.evmarketplace.enums.PackageStatus;
-import com.evmarketplace.enums.PricingModel;
 import com.evmarketplace.repository.DataPackageRepository;
-import com.evmarketplace.repository.DataSourceRepository;
-import com.evmarketplace.request.CreateDataPackageRequest;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-@Service
-@RequiredArgsConstructor
+
 @Service
 public class DataPackageService {
-
+    
     @Autowired
     private DataPackageRepository dataPackageRepository;
-
-    // ... (Phương thức findAll() và findById() nếu có)
-
-    /**
-     * Tìm kiếm gói dữ liệu theo nhiều tiêu chí
-     * @param name - Tên gói dữ liệu (tìm kiếm gần đúng)
-     * @param dataType - Loại dữ liệu
-     * @param format - Định dạng
-     * @param minPrice - Giá tối thiểu
-     * @param maxPrice - Giá tối đa
-     * @param status - Trạng thái
-     * @param pricingModel - Mô hình giá
-     * @param pageable - Thông tin phân trang và sắp xếp
-     * @return Page<DataPackage>
-     */
-    public Page<DataPackage> searchDataPackages(
-            String name,
-            DataType dataType,
-            DataFormat format,
-            BigDecimal minPrice,
-            BigDecimal maxPrice,
-            PackageStatus status,
-            PricingModel pricingModel,
-            Pageable pageable) {
-        
-        return dataPackageRepository.searchDataPackages(
-                name, dataType, format, minPrice, maxPrice, status, pricingModel, pageable
-        );
+    
+    public DataPackage createDataPackage(DataPackage dataPackage) {
+        return dataPackageRepository.save(dataPackage);
     }
-}
-
-private final DataSourceRepository dataSourceRepository;
-
-@Transactional
-public DataPackage createDataPackage(CreateDataPackageRequest request) {
-    DataSource dataSource = dataSourceRepository.findById(request.getDataSourceId())
-            .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy nguồn dữ liệu"));
-
-    DataPackage dataPackage = new DataPackage();
-    dataPackage.setName(request.getName());
-    dataPackage.setDescription(request.getDescription());
-    dataPackage.setDataType(request.getDataType());
-    dataPackage.setFormat(request.getFormat());
-    dataPackage.setPrice(request.getPrice());
-    dataPackage.setPricingModel(request.getPricingModel());
-    dataPackage.setStatus(request.getStatus());
-    dataPackage.setDataSource(dataSource);
-    dataPackage.setSizeInMb(request.getSizeInMb());
-    dataPackage.setCreatedDate(LocalDateTime.now());
-    return dataPackageRepository.save(dataPackage);
+    
+    public Optional<DataPackage> findById(Long id) {
+        return dataPackageRepository.findById(id);
+    }
+    
+    public List<DataPackage> findAll() {
+        return dataPackageRepository.findAll();
+    }
+    
+    public List<DataPackage> findByDataSourceId(Long dataSourceId) {
+        return dataPackageRepository.findByDataSourceId(dataSourceId);
+    }
+    
+    public List<DataPackage> findByDataType(DataPackage.DataType dataType) {
+        return dataPackageRepository.findByDataType(dataType);
+    }
+    
+    public List<DataPackage> findByFormat(DataPackage.DataFormat format) {
+        return dataPackageRepository.findByFormat(format);
+    }
+    
+    public List<DataPackage> findByStatus(DataPackage.PackageStatus status) {
+        return dataPackageRepository.findByStatus(status);
+    }
+    
+    public List<DataPackage> findByNameContaining(String name) {
+        return dataPackageRepository.findByNameContainingIgnoreCase(name);
+    }
+    
+    public List<DataPackage> findByPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
+        return dataPackageRepository.findByPriceRange(minPrice, maxPrice);
+    }
+    
+    public List<DataPackage> findByDataProviderId(Long dataProviderId) {
+        return dataPackageRepository.findByDataProviderId(dataProviderId);
+    }
+    
+    public DataPackage updateDataPackage(DataPackage dataPackage) {
+        return dataPackageRepository.save(dataPackage);
+    }
+    
+    public void deleteDataPackage(Long id) {
+        dataPackageRepository.deleteById(id);
+    }
+    
+    public List<DataPackage> searchDataPackages(String name, DataPackage.DataType dataType, 
+                                               DataPackage.DataFormat format, BigDecimal minPrice, BigDecimal maxPrice) {
+        List<DataPackage> results = findAll();
+        
+        if (name != null && !name.trim().isEmpty()) {
+            results = results.stream()
+                    .filter(dp -> dp.getName().toLowerCase().contains(name.toLowerCase()))
+                    .toList();
+        }
+        
+        if (dataType != null) {
+            results = results.stream()
+                    .filter(dp -> dp.getDataType() == dataType)
+                    .toList();
+        }
+        
+        if (format != null) {
+            results = results.stream()
+                    .filter(dp -> dp.getFormat() == format)
+                    .toList();
+        }
+        
+        if (minPrice != null) {
+            results = results.stream()
+                    .filter(dp -> dp.getPrice().compareTo(minPrice) >= 0)
+                    .toList();
+        }
+        
+        if (maxPrice != null) {
+            results = results.stream()
+                    .filter(dp -> dp.getPrice().compareTo(maxPrice) <= 0)
+                    .toList();
+        }
+        
+        return results;
+    }
 }

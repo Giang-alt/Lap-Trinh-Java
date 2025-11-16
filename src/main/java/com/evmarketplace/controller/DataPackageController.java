@@ -1,84 +1,103 @@
 package com.evmarketplace.controller;
 
-import java.util.List;
-import java.util.Optional;
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.http.HttpStatus;
-import jakarta.validation.Valid)
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.evmarketplace.entity.DataPackage;
-import com.evmarketplace.entity.DataPackage.DataFormat;
-import com.evmarketplace.entity.DataPackage.DataType;
-import com.evmarketplace.entity.DataPackage.PackageStatus;
-import com.evmarketplace.entity.DataPackage.PricingModel;
 import com.evmarketplace.service.DataPackageService;
-import com.evmarketplace.dto.CreateDataPackageRequest;
 
 @RestController
 @RequestMapping("/data-packages")
 @CrossOrigin(origins = "http://localhost:3000")
 public class DataPackageController {
-
+    
     @Autowired
     private DataPackageService dataPackageService;
-
+    
     @GetMapping
     public ResponseEntity<List<DataPackage>> getAllDataPackages() {
-        return ResponseEntity.ok(dataPackageService.findAll());
+        List<DataPackage> packages = dataPackageService.findAll();
+        return ResponseEntity.ok(packages);
     }
-
+    
     @GetMapping("/{id}")
     public ResponseEntity<DataPackage> getDataPackageById(@PathVariable Long id) {
         return dataPackageService.findById(id)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.notFound().build());
     }
-
+    
     @GetMapping("/search")
-    public ResponseEntity<Page<DataPackage>> searchDataPackages(
+    public ResponseEntity<List<DataPackage>> searchDataPackages(
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) DataType dataType,
-            @RequestParam(required = false) DataFormat format,
+            @RequestParam(required = false) String dataType,
+            @RequestParam(required = false) String format,
             @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) PackageStatus status,
-            @RequestParam(required = false) PricingModel pricingModel,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "name") String sortBy,
-            @RequestParam(defaultValue = "ASC") String sortDirection
-    ) {
-        Sort.Direction direction = sortDirection.equalsIgnoreCase("DESC") 
-                ? Sort.Direction.DESC 
-                : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-
-        Page<DataPackage> results = dataPackageService.searchDataPackages(
-                name, dataType, format, minPrice, maxPrice, status, pricingModel, pageable
-        );
-
-        return ResponseEntity.ok(results);
+            @RequestParam(required = false) BigDecimal maxPrice) {
+        
+        DataPackage.DataType type = null;
+        if (dataType != null && !dataType.trim().isEmpty()) {
+            try {
+                type = DataPackage.DataType.valueOf(dataType.toUpperCase());
+            } catch (IllegalArgumentException e) {
+            }
+        }
+        
+        DataPackage.DataFormat dataFormat = null;
+        if (format != null && !format.trim().isEmpty()) {
+            try {
+                dataFormat = DataPackage.DataFormat.valueOf(format.toUpperCase());
+            } catch (IllegalArgumentException e) {
+            }
+        }
+        
+        List<DataPackage> packages = dataPackageService.searchDataPackages(name, type, dataFormat, minPrice, maxPrice);
+        return ResponseEntity.ok(packages);
     }
-    private final DataPackageService dataPackageService;
-    public DataPackageController(DataPackageService dataPackageService) {
-        this.dataPackageService = dataPackageService;
+    
+    @GetMapping("/by-source/{dataSourceId}")
+    public ResponseEntity<List<DataPackage>> getDataPackagesBySource(@PathVariable Long dataSourceId) {
+        List<DataPackage> packages = dataPackageService.findByDataSourceId(dataSourceId);
+        return ResponseEntity.ok(packages);
     }
-
+    
+    @GetMapping("/by-provider/{dataProviderId}")
+    public ResponseEntity<List<DataPackage>> getDataPackagesByProvider(@PathVariable Long dataProviderId) {
+        List<DataPackage> packages = dataPackageService.findByDataProviderId(dataProviderId);
+        return ResponseEntity.ok(packages);
+    }
+    
     @PostMapping
-    public ResponseEntity<DataPackage> createDataPackage(
-            @Valid @RequestBody CreateDataPackageRequest request) {
-
-        DataPackage created = dataPackageService.createDataPackage(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<DataPackage> createDataPackage(@RequestBody DataPackage dataPackage) {
+        DataPackage createdPackage = dataPackageService.createDataPackage(dataPackage);
+        return ResponseEntity.ok(createdPackage);
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<DataPackage> updateDataPackage(@PathVariable Long id, @RequestBody DataPackage dataPackage) {
+        dataPackage.setId(id);
+        DataPackage updatedPackage = dataPackageService.updateDataPackage(dataPackage);
+        return ResponseEntity.ok(updatedPackage);
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteDataPackage(@PathVariable Long id) {
+        dataPackageService.deleteDataPackage(id);
+        Map<String, String> response = Map.of("message", "Data package deleted successfully");
+        return ResponseEntity.ok(response);
     }
 }
-

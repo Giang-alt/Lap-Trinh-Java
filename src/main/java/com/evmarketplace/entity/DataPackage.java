@@ -1,18 +1,10 @@
 package com.evmarketplace.entity;
 
-import java.math.BigDecimal;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "data_packages")
@@ -42,11 +34,15 @@ public class DataPackage {
     @NotNull
     @Column(precision = 10, scale = 2)
     private BigDecimal price;
-
+    
     @Enumerated(EnumType.STRING)
     @Column(name = "pricing_model")
     private PricingModel pricingModel = PricingModel.ONE_TIME;
-
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "data_source_id", nullable = false)
+    private DataSource dataSource;
+    
     @Enumerated(EnumType.STRING)
     private PackageStatus status = PackageStatus.ACTIVE;
     
@@ -55,15 +51,16 @@ public class DataPackage {
     
     // Constructors
     public DataPackage() {}
-
-    public DataPackage(String name, String description, DataType dataType, DataFormat format,
-                      Long size, BigDecimal price) {
+    
+    public DataPackage(String name, String description, DataType dataType, DataFormat format, 
+                      Long size, BigDecimal price, DataSource dataSource) {
         this.name = name;
         this.description = description;
         this.dataType = dataType;
         this.format = format;
         this.size = size;
         this.price = price;
+        this.dataSource = dataSource;
     }
     
     // Getters and Setters
@@ -130,7 +127,15 @@ public class DataPackage {
     public void setPricingModel(PricingModel pricingModel) {
         this.pricingModel = pricingModel;
     }
-
+    
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+    
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+    
     public PackageStatus getStatus() {
         return status;
     }
