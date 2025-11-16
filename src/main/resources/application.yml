@@ -8,11 +8,15 @@ spring:
     name: ev-data-marketplace
   
   datasource:
-    url: jdbc:mysql://localhost:3306/ev_marketplace
-    username: root
-    password: "password"
+    url: jdbc:mysql://localhost:3306/ev_marketplace?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: evuser
+    password: evpassword
+    driver-class-name: com.mysql.cj.jdbc.Driver
     
+
+      
   jpa:
+    defer-datasource-initialization: true
     hibernate:
       ddl-auto: update
     show-sql: true
@@ -27,8 +31,9 @@ spring:
       max-request-size: 10MB
 
 jwt:
-  secret: evMarketplaceSecretKey2025ForJWTTokenGenerationAndValidationHS512
+  secret: ThisIsAMuchLongerAndMoreSecureSecretKeyForOurEVMarketplaceProject2025
   expiration: 86400000 # 24 hours
+
 logging:
   level:
     com.evmarketplace: DEBUG

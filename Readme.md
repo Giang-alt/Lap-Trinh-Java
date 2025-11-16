@@ -71,6 +71,30 @@ npm start
 
 Frontend sẽ chạy tại: http://localhost:3000
 
+## Chức năng đã triển khai
+
+### Mức Dễ (Easy Level)
+
+#### 1. Chức năng cho Data Consumer
+- ✅ Tìm kiếm & khám phá dữ liệu cơ bản
+- ✅ Danh mục dữ liệu đơn giản
+- ✅ Bộ lọc cơ bản (thời gian, khu vực, loại dữ liệu)
+- ✅ Giao diện tìm kiếm đơn giản
+- ✅ Xem chi tiết gói dữ liệu
+
+#### 2. Chức năng cho Data Provider
+- ✅ Đăng ký & quản lý nguồn dữ liệu cơ bản
+- ✅ Dashboard quản lý gói dữ liệu
+- ✅ Giao diện quản lý đơn giản
+- ✅ Xem thống kê cơ bản
+
+#### 3. Chức năng cho Admin
+- ✅ Quản lý người dùng cơ bản
+- ✅ Đăng ký/đăng nhập
+- ✅ Phân quyền cơ bản
+- ✅ Quản lý tài khoản
+- ✅ Duyệt gói dữ liệu
+
 ## API Endpoints
 
 ### Authentication
@@ -132,3 +156,18 @@ Frontend sẽ chạy tại: http://localhost:3000
 2. Truy cập "Dashboard Admin"
 3. Duyệt các gói dữ liệu chờ phê duyệt
 4. Quản lý người dùng và hệ thống
+
+
+### Mức Trung bình (Medium Level)
+- [ ] Hệ thống thanh toán
+- [ ] Bảo mật cơ bản
+- [ ] API cơ bản
+- [ ] Upload file dữ liệu
+- [ ] Hệ thống billing
+
+### Mức Nâng cao (Advanced Level)
+- [ ] Dashboard phân tích
+- [ ] AI gợi ý
+- [ ] API nâng cao
+- [ ] Bảo mật nâng cao
+- [ ] Báo cáo chi tiết
