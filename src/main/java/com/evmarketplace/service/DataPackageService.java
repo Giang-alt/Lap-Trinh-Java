@@ -10,8 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import com.evmarketplace.entity.DataPackage;
+import com.evmarketplace.entity.DataSource;
 import com.evmarketplace.repository.DataPackageRepository;
+import com.evmarketplace.repository.DataSourceRepository;
 import com.evmarketplace.dto.UpdateDataPackageRequest;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class DataPackageService {
@@ -19,7 +22,18 @@ public class DataPackageService {
     @Autowired
     private DataPackageRepository dataPackageRepository;
     
+    @Autowired
+    private DataSourceRepository dataSourceRepository;
+    
     public DataPackage createDataPackage(DataPackage dataPackage) {
+        if (dataPackage.getDataSource() == null || dataPackage.getDataSource().getId() == null) {
+            throw new IllegalArgumentException("Data source is required");
+        }
+        
+        DataSource dataSource = dataSourceRepository.findById(dataPackage.getDataSource().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Data source not found"));
+        
+        dataPackage.setDataSource(dataSource);
         return dataPackageRepository.save(dataPackage);
     }
     
@@ -113,14 +127,30 @@ public class DataPackageService {
 @Transactional
 public Optional<DataPackage> updateDataPackage(Long id, UpdateDataPackageRequest request) {
     return dataPackageRepository.findById(id).map(existingPackage -> {
-        existingPackage.setName(request.getName());
-        existingPackage.setDescription(request.getDescription());
-        existingPackage.setDataType(request.getDataType());          
-        existingPackage.setFormat(request.getFormat());             
-        existingPackage.setPrice(request.getPrice());
-        existingPackage.setPricingModel(request.getPricingModel());  
-        existingPackage.setStatus(request.getStatus());              
-        existingPackage.setSize(request.getSize());
+        if (request.getName() != null) {
+            existingPackage.setName(request.getName());
+        }
+        if (request.getDescription() != null) {
+            existingPackage.setDescription(request.getDescription());
+        }
+        if (request.getDataType() != null) {
+            existingPackage.setDataType(request.getDataType());
+        }
+        if (request.getFormat() != null) {
+            existingPackage.setFormat(request.getFormat());
+        }
+        if (request.getPrice() != null) {
+            existingPackage.setPrice(request.getPrice());
+        }
+        if (request.getPricingModel() != null) {
+            existingPackage.setPricingModel(request.getPricingModel());
+        }
+        if (request.getStatus() != null) {
+            existingPackage.setStatus(request.getStatus());
+        }
+        if (request.getSize() != null) {
+            existingPackage.setSize(request.getSize());
+        }
         return dataPackageRepository.save(existingPackage);
     });
 }

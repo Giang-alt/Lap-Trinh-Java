@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -86,9 +87,15 @@ public class DataPackageController {
     }
     
     @PostMapping
-    public ResponseEntity<DataPackage> createDataPackage(@RequestBody DataPackage dataPackage) {
-        DataPackage createdPackage = dataPackageService.createDataPackage(dataPackage);
-        return ResponseEntity.ok(createdPackage);
+    public ResponseEntity<?> createDataPackage(@RequestBody DataPackage dataPackage) {
+        try {
+            DataPackage createdPackage = dataPackageService.createDataPackage(dataPackage);
+            return ResponseEntity.ok(createdPackage);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (jakarta.persistence.EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        }
     }
     
     @PutMapping("/{id}")

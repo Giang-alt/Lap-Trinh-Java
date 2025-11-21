@@ -76,24 +76,24 @@ Frontend sẽ chạy tại: http://localhost:3000
 ### Mức Dễ (Easy Level)
 
 #### 1. Chức năng cho Data Consumer
-- ✅ Tìm kiếm & khám phá dữ liệu cơ bản
-- ✅ Danh mục dữ liệu đơn giản
-- ✅ Bộ lọc cơ bản (thời gian, khu vực, loại dữ liệu)
-- ✅ Giao diện tìm kiếm đơn giản
-- ✅ Xem chi tiết gói dữ liệu
+-  Tìm kiếm & khám phá dữ liệu cơ bản
+-  Danh mục dữ liệu đơn giản
+-  Bộ lọc cơ bản (thời gian, khu vực, loại dữ liệu)
+-  Giao diện tìm kiếm đơn giản
+-  Xem chi tiết gói dữ liệu
 
 #### 2. Chức năng cho Data Provider
-- ✅ Đăng ký & quản lý nguồn dữ liệu cơ bản
-- ✅ Dashboard quản lý gói dữ liệu
-- ✅ Giao diện quản lý đơn giản
-- ✅ Xem thống kê cơ bản
+-  Đăng ký & quản lý nguồn dữ liệu cơ bản
+-  Dashboard quản lý gói dữ liệu
+-  Giao diện quản lý đơn giản
+-  Xem thống kê cơ bản
 
 #### 3. Chức năng cho Admin
-- ✅ Quản lý người dùng cơ bản
-- ✅ Đăng ký/đăng nhập
-- ✅ Phân quyền cơ bản
-- ✅ Quản lý tài khoản
-- ✅ Duyệt gói dữ liệu
+-  Quản lý người dùng cơ bản
+-  Đăng ký/đăng nhập
+-  Phân quyền cơ bản
+-  Quản lý tài khoản
+-  Duyệt gói dữ liệu
 
 ## API Endpoints
 
@@ -128,14 +128,14 @@ Frontend sẽ chạy tại: http://localhost:3000
 - Email: `admin@evmarketplace.com`
 
 ### Data Consumer
-- Username: `consumer1`
+- Username: `consumer`
 - Password: `password`
-- Email: `consumer1@example.com`
+- Email: `consumer@example.com`
 
 ### Data Provider
-- Username: `provider1`
+- Username: `provider`
 - Password: `password`
-- Email: `provider1@example.com`
+- Email: `provider@example.com`
 
 ## Hướng dẫn sử dụng
 
@@ -157,6 +157,7 @@ Frontend sẽ chạy tại: http://localhost:3000
 3. Duyệt các gói dữ liệu chờ phê duyệt
 4. Quản lý người dùng và hệ thống
 
+dashboards, charts,...
 
 ### Mức Trung bình (Medium Level)
 - [ ] Hệ thống thanh toán

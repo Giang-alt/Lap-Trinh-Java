@@ -9,26 +9,20 @@ import java.math.BigDecimal;
 
 public class UpdateDataPackageRequest {
 
-    @NotBlank(message = "Tên gói dữ liệu không được bỏ trống")
     private String name;
 
     @Size(max = 500, message = "Mô tả không được quá 500 ký tự")
     private String description;
 
-    @NotNull(message = "Loại dữ liệu không được bỏ trống")
     private DataType dataType;
 
-    @NotNull(message = "Định dạng không được bỏ trống")
     private DataFormat format;
 
-    @NotNull(message = "Giá không được bỏ trống")
-    @DecimalMin(value = "0.0", message = "Giá phải là số dương")
+    @DecimalMin(value = "0.0", message = "Giá phải là số dương", groups = {})
     private BigDecimal price;
 
-    @NotNull(message = "Mô hình giá không được bỏ trống")
     private PricingModel pricingModel;
 
-    @NotNull(message = "Trạng thái không được bỏ trống")
     private PackageStatus status;
 
     @Positive(message = "Kích thước file phải là số dương")
