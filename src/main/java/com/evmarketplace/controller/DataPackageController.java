@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatus; // Đã có sẵn
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +22,7 @@ import com.evmarketplace.entity.DataPackage;
 import com.evmarketplace.service.DataPackageService;
 import com.evmarketplace.dto.UpdateDataPackageRequest;
 import jakarta.validation.Valid;
+import jakarta.persistence.EntityNotFoundException; // Thêm import này cho EntityNotFoundException
 
 @RestController
 @RequestMapping("/data-packages")
@@ -107,10 +108,21 @@ public class DataPackageController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
     
+    /**
+     * Sửa: Thêm try-catch để xử lý EntityNotFoundException (404) và các Exception khác (500).
+     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> deleteDataPackage(@PathVariable Long id) {
-        dataPackageService.deleteDataPackage(id);
-        Map<String, String> response = Map.of("message", "Data package deleted successfully");
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> deleteDataPackage(@PathVariable Long id) {
+        try {
+            dataPackageService.deleteDataPackage(id);
+            Map<String, String> response = Map.of("message", "Data package deleted successfully");
+            return ResponseEntity.ok(response);
+        } catch (jakarta.persistence.EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND) // Trả về 404
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) // Trả về 500
+                    .body(Map.of("error", "Failed to delete data package: " + e.getMessage()));
+        }
     }
 }

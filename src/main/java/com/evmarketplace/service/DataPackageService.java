@@ -6,15 +6,14 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.transaction.annotation.Transactional; // Thêm import này
 
 import com.evmarketplace.entity.DataPackage;
 import com.evmarketplace.entity.DataSource;
 import com.evmarketplace.repository.DataPackageRepository;
 import com.evmarketplace.repository.DataSourceRepository;
 import com.evmarketplace.dto.UpdateDataPackageRequest;
-import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException; // Đã có sẵn
 
 @Service
 public class DataPackageService {
@@ -77,7 +76,16 @@ public class DataPackageService {
         return dataPackageRepository.save(dataPackage);
     }
     
+    /**
+     * Sửa: Thêm @Transactional và kiểm tra tồn tại trước khi xóa.
+     */
+    @Transactional
     public void deleteDataPackage(Long id) {
+        // Kiểm tra gói dữ liệu có tồn tại không
+        DataPackage dataPackage = dataPackageRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Data package not found with id: " + id));
+        
+        // Xóa gói dữ liệu
         dataPackageRepository.deleteById(id);
     }
     
@@ -154,7 +162,4 @@ public Optional<DataPackage> updateDataPackage(Long id, UpdateDataPackageRequest
         return dataPackageRepository.save(existingPackage);
     });
 }
-
-
-
 }
