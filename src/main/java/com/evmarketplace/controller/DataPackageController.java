@@ -108,9 +108,17 @@ public class DataPackageController {
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> deleteDataPackage(@PathVariable Long id) {
-        dataPackageService.deleteDataPackage(id);
-        Map<String, String> response = Map.of("message", "Data package deleted successfully");
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> deleteDataPackage(@PathVariable Long id) {
+        try {
+            dataPackageService.deleteDataPackage(id);
+            Map<String, String> response = Map.of("message", "Data package deleted successfully");
+            return ResponseEntity.ok(response);
+        } catch (jakarta.persistence.EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to delete data package: " + e.getMessage()));
+        }
     }
 }

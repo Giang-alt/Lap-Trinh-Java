@@ -77,7 +77,13 @@ public class DataPackageService {
         return dataPackageRepository.save(dataPackage);
     }
     
+    @Transactional
     public void deleteDataPackage(Long id) {
+        // Kiểm tra gói dữ liệu có tồn tại không
+        DataPackage dataPackage = dataPackageRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Data package not found with id: " + id));
+        
+        // Xóa gói dữ liệu
         dataPackageRepository.deleteById(id);
     }
     
