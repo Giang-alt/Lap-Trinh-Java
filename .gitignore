@@ -46,3 +46,7 @@ build/
 *.rej
 *.orig
 
+# Documentation files
+*.md
+*.puml
+
