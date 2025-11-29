@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Alert, Badge } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/axiosConfig';
 
 const DataPackageDetail = () => {
   const { id } = useParams();
@@ -16,7 +16,7 @@ const DataPackageDetail = () => {
 
   const fetchPackageDetail = async () => {
     try {
-      const response = await axios.get(`/api/data-packages/${id}`);
+      const response = await api.get(`/api/data-packages/${id}`);
       setPackageData(response.data);
     } catch (err) {
       setError('Không thể tải thông tin gói dữ liệu');

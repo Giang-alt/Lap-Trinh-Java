@@ -35,6 +35,7 @@ public abstract class User implements UserDetails {
     
     @NotBlank
     @Size(max = 100)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private String password;
     
     @Enumerated(EnumType.STRING)

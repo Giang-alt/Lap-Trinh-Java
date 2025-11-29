@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Alert, Table, Badge } from 'react-bootstrap';
 import { useAuth } from '../contexts/AuthContext';
-import axios from 'axios';
+import api from '../utils/axiosConfig';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -20,8 +20,8 @@ const AdminDashboard = () => {
     try {
       // Fetch users and packages data
       const [usersResponse, packagesResponse] = await Promise.all([
-        axios.get('/api/users'),
-        axios.get('/api/data-packages')
+        api.get('/api/users'),
+        api.get('/api/data-packages')
       ]);
       
       setUsers(usersResponse.data);
@@ -35,7 +35,6 @@ const AdminDashboard = () => {
 
   const handleApprovePackage = async (packageId) => {
     try {
-      const token = localStorage.getItem('token');
       const packageToUpdate = packages.find(p => p.id === packageId);
       
       if (!packageToUpdate) return;
@@ -45,12 +44,7 @@ const AdminDashboard = () => {
         status: 'ACTIVE'
       };
 
-      await axios.put(`/api/data-packages/${packageId}`, updatedPackage, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      await api.put(`/api/data-packages/${packageId}`, updatedPackage);
 
       // Refresh dashboard data
       fetchDashboardData();
@@ -62,7 +56,6 @@ const AdminDashboard = () => {
 
   const handleRejectPackage = async (packageId) => {
     try {
-      const token = localStorage.getItem('token');
       const packageToUpdate = packages.find(p => p.id === packageId);
       
       if (!packageToUpdate) return;
@@ -72,12 +65,7 @@ const AdminDashboard = () => {
         status: 'INACTIVE'
       };
 
-      await axios.put(`/api/data-packages/${packageId}`, updatedPackage, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      await api.put(`/api/data-packages/${packageId}`, updatedPackage);
 
       // Refresh dashboard data
       fetchDashboardData();
@@ -89,17 +77,7 @@ const AdminDashboard = () => {
 
   const handleSuspendUser = async (userId) => {
     try {
-      const token = localStorage.getItem('token');
-      
-      await axios.put(`/api/users/${userId}/status`, 
-        { status: 'SUSPENDED' },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      await api.put(`/api/users/${userId}/status`, { status: 'SUSPENDED' });
 
       // Refresh dashboard data
       fetchDashboardData();
@@ -111,17 +89,7 @@ const AdminDashboard = () => {
 
   const handleActivateUser = async (userId) => {
     try {
-      const token = localStorage.getItem('token');
-      
-      await axios.put(`/api/users/${userId}/status`, 
-        { status: 'ACTIVE' },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      await api.put(`/api/users/${userId}/status`, { status: 'ACTIVE' });
 
       // Refresh dashboard data
       fetchDashboardData();

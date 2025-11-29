@@ -3,6 +3,7 @@ package com.evmarketplace.controller;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.evmarketplace.entity.DataPackage;
+import com.evmarketplace.entity.User;
+import com.evmarketplace.entity.DataProvider;
 import com.evmarketplace.service.DataPackageService;
+import com.evmarketplace.service.UserService;
 import com.evmarketplace.dto.UpdateDataPackageRequest;
 import jakarta.validation.Valid;
 
@@ -31,13 +38,18 @@ public class DataPackageController {
     @Autowired
     private DataPackageService dataPackageService;
     
+    @Autowired
+    private UserService userService;
+    
     @GetMapping
+    @PreAuthorize("hasAnyRole('DATA_CONSUMER', 'ADMIN')")
     public ResponseEntity<List<DataPackage>> getAllDataPackages() {
         List<DataPackage> packages = dataPackageService.findAll();
         return ResponseEntity.ok(packages);
     }
     
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DATA_CONSUMER', 'ADMIN')")
     public ResponseEntity<DataPackage> getDataPackageById(@PathVariable Long id) {
         return dataPackageService.findById(id)
                 .map(ResponseEntity::ok)
@@ -45,6 +57,7 @@ public class DataPackageController {
     }
     
     @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('DATA_CONSUMER', 'ADMIN')")
     public ResponseEntity<List<DataPackage>> searchDataPackages(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String dataType,
@@ -81,12 +94,27 @@ public class DataPackageController {
     }
     
     @GetMapping("/by-provider/{dataProviderId}")
+    @PreAuthorize("hasAnyRole('DATA_PROVIDER', 'ADMIN')")
     public ResponseEntity<List<DataPackage>> getDataPackagesByProvider(@PathVariable Long dataProviderId) {
+        // Kiểm tra Provider chỉ xem được gói của chính mình
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) auth.getPrincipal();
+        
+        if (currentUser.getRole() == User.UserRole.DATA_PROVIDER) {
+            // Lấy provider ID từ current user
+            Long currentProviderId = getCurrentProviderId(currentUser);
+            if (currentProviderId == null || !dataProviderId.equals(currentProviderId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(List.of());
+            }
+        }
+        
         List<DataPackage> packages = dataPackageService.findByDataProviderId(dataProviderId);
         return ResponseEntity.ok(packages);
     }
     
     @PostMapping
+    @PreAuthorize("hasAnyRole('DATA_PROVIDER', 'ADMIN')")
     public ResponseEntity<?> createDataPackage(@RequestBody DataPackage dataPackage) {
         try {
             DataPackage createdPackage = dataPackageService.createDataPackage(dataPackage);
@@ -99,16 +127,39 @@ public class DataPackageController {
     }
     
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DATA_PROVIDER', 'ADMIN')")
     public ResponseEntity<DataPackage> updateDataPackage(
             @PathVariable Long id,
             @Valid @RequestBody UpdateDataPackageRequest request) {
+        // Kiểm tra Provider chỉ sửa được gói của chính mình
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) auth.getPrincipal();
+        
+        if (currentUser.getRole() == User.UserRole.DATA_PROVIDER) {
+            if (!isOwnerOfDataPackage(id, currentUser)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        }
+        
         return dataPackageService.updateDataPackage(id, request)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
     
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DATA_PROVIDER', 'ADMIN')")
     public ResponseEntity<?> deleteDataPackage(@PathVariable Long id) {
+        // Kiểm tra Provider chỉ xóa được gói của chính mình
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) auth.getPrincipal();
+        
+        if (currentUser.getRole() == User.UserRole.DATA_PROVIDER) {
+            if (!isOwnerOfDataPackage(id, currentUser)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error", "You can only delete your own data packages"));
+            }
+        }
+        
         try {
             dataPackageService.deleteDataPackage(id);
             Map<String, String> response = Map.of("message", "Data package deleted successfully");
@@ -120,5 +171,36 @@ public class DataPackageController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Failed to delete data package: " + e.getMessage()));
         }
+    }
+    
+    // Helper methods
+    private Long getCurrentProviderId(User user) {
+        // Lấy full user entity từ database để có thông tin provider
+        Optional<User> fullUser = userService.findByUsername(user.getUsername());
+        if (fullUser.isPresent() && fullUser.get() instanceof DataProvider) {
+            return fullUser.get().getId();
+        }
+        return null;
+    }
+    
+    private boolean isOwnerOfDataPackage(Long packageId, User user) {
+        if (user.getRole() != User.UserRole.DATA_PROVIDER) {
+            return false;
+        }
+        
+        Optional<DataPackage> dataPackage = dataPackageService.findById(packageId);
+        if (dataPackage.isEmpty()) {
+            return false;
+        }
+        
+        DataPackage pkg = dataPackage.get();
+        if (pkg.getDataSource() == null || pkg.getDataSource().getDataProvider() == null) {
+            return false;
+        }
+        
+        Long providerId = pkg.getDataSource().getDataProvider().getId();
+        Long currentProviderId = getCurrentProviderId(user);
+        
+        return providerId != null && currentProviderId != null && providerId.equals(currentProviderId);
     }
 }

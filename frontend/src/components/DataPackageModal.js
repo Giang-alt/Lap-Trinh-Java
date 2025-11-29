@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form, Button, Alert } from 'react-bootstrap';
-import axios from 'axios';
+import api from '../utils/axiosConfig';
 
 const DataPackageModal = ({ show, handleClose, packageData, dataSourceId, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -63,14 +63,6 @@ const DataPackageModal = ({ show, handleClose, packageData, dataSourceId, onSucc
     setLoading(true);
 
     try {
-      const token = localStorage.getItem('token');
-      const config = {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      };
-
       if (packageData && packageData.id) {
         // Update existing package
         const updatePayload = {
@@ -83,7 +75,7 @@ const DataPackageModal = ({ show, handleClose, packageData, dataSourceId, onSucc
           pricingModel: formData.pricingModel,
           status: formData.status,
         };
-        await axios.put(`/api/data-packages/${packageData.id}`, updatePayload, config);
+        await api.put(`/api/data-packages/${packageData.id}`, updatePayload);
       } else {
         // Create new package
         const createPayload = {
@@ -100,7 +92,7 @@ const DataPackageModal = ({ show, handleClose, packageData, dataSourceId, onSucc
               id: dataSourceId
             }
         };
-        await axios.post('/api/data-packages', createPayload, config);
+        await api.post('/api/data-packages', createPayload);
       }
 
       if (onSuccess) {

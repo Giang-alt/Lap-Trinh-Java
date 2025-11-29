@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.evmarketplace.util.JwtUtil;
+import com.evmarketplace.entity.User;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -56,7 +57,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                                if (jwtUtil.validateToken(jwt, userDetails)) {
+                // Chặn người dùng bị khóa/tạm khóa/kích hoạt sai trạng thái ngay cả khi token còn hạn
+                if (userDetails instanceof User evUser) {
+                    if (evUser.getStatus() != User.UserStatus.ACTIVE || !evUser.isAccountNonLocked()) {
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Account is inactive or suspended");
+                        return;
+                    }
+                }
+
+                if (jwtUtil.validateToken(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

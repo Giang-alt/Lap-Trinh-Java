@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Alert, Table, Badge } from 'react-bootstrap';
 import { useAuth } from '../contexts/AuthContext';
-import axios from 'axios';
+import api from '../utils/axiosConfig';
 import DataPackageModal from '../components/DataPackageModal';
 
 const ProviderDashboard = () => {
@@ -23,9 +23,10 @@ const ProviderDashboard = () => {
 
   const fetchMyPackages = async () => {
     try {
-      const response = await axios.get(`/api/data-packages/by-provider/${user.id}`);
+      const response = await api.get(`/api/data-packages/by-provider/${user.id}`);
       setPackages(response.data);
     } catch (err) {
+      console.error('Error fetching packages:', err);
       setError('Không thể tải danh sách gói dữ liệu');
     } finally {
       setLoading(false);
@@ -34,26 +35,62 @@ const ProviderDashboard = () => {
 
   const fetchDataSources = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`/api/data-sources/by-provider/${user.id}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await api.get(`/api/data-sources/by-provider/${user.id}`);
       setDataSources(response.data);
+      
       if (response.data.length > 0) {
         setSelectedDataSourceId(response.data[0].id);
+      } else {
+        // Tự động tạo data source mặc định nếu chưa có
+        try {
+          const createResponse = await api.post('/api/data-sources/auto-create', {});
+          if (createResponse.data && createResponse.data.id) {
+            setSelectedDataSourceId(createResponse.data.id);
+            setDataSources([createResponse.data]);
+          }
+        } catch (createErr) {
+          console.error('Không thể tạo nguồn dữ liệu mặc định', createErr);
+          setError('Vui lòng tạo nguồn dữ liệu trước khi tạo gói dữ liệu');
+        }
       }
     } catch (err) {
       console.error('Không thể tải danh sách nguồn dữ liệu', err);
+      // Thử tạo data source mặc định nếu lỗi
+      try {
+        const createResponse = await api.post('/api/data-sources/auto-create', {});
+        if (createResponse.data && createResponse.data.id) {
+          setSelectedDataSourceId(createResponse.data.id);
+          setDataSources([createResponse.data]);
+        }
+      } catch (createErr) {
+        console.error('Không thể tạo nguồn dữ liệu mặc định', createErr);
+      }
     }
   };
 
-  const handleCreatePackage = () => {
+  const handleCreatePackage = async () => {
     if (!selectedDataSourceId) {
-      setError('Vui lòng tạo nguồn dữ liệu trước khi tạo gói dữ liệu');
+      // Thử tạo data source mặc định tự động
+      try {
+        const response = await api.post('/api/data-sources/auto-create', {});
+        if (response.data && response.data.id) {
+          setSelectedDataSourceId(response.data.id);
+          setDataSources([response.data]);
+          setError('');
+          setSelectedPackage(null);
+          setShowModal(true);
+        } else {
+          setError('Vui lòng tạo nguồn dữ liệu trước khi tạo gói dữ liệu');
+        }
+      } catch (err) {
+        setError('Không thể tạo nguồn dữ liệu. Vui lòng thử lại sau.');
+        console.error('Error creating data source:', err);
+      }
       return;
     }
     setSelectedPackage(null);
     setShowModal(true);
+    setError('');
   };
 
   const handleEditPackage = (pkg) => {

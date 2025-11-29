@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/axiosConfig';
 
 const AuthContext = createContext();
 
@@ -17,48 +17,55 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
-      // Verify token and get user info
-      axios.get('/api/auth/me', {
-        headers: { Authorization: `Bearer ${token}` }
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    // Attach token so the first verification call includes it
+    api.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+    api
+      .get('/api/auth/me')
+      .then((response) => {
+        const { id, username, role } = response.data;
+        setUser({ id, username, role });
       })
-      .then(response => {
-        setUser(response.data);
-      })
-      .catch(error => {
+      .catch((error) => {
         localStorage.removeItem('token');
+        setUser(null);
         console.error('Token verification failed:', error);
       })
       .finally(() => {
         setLoading(false);
       });
-    } else {
-      setLoading(false);
-    }
   }, []);
 
   const login = async (username, password) => {
     try {
-      const response = await axios.post('/api/auth/login', {
+      const response = await api.post('/api/auth/login', {
         username,
-        password
+        password,
       });
-      
-      const { token, userType, userId, username: userUsername } = response.data;
+
+      const { token } = response.data;
+
+      // Persist token and set default header immediately
       localStorage.setItem('token', token);
-      
-      const userData = {
-        id: userId,
-        username: userUsername,
-        role: userType
-      };
-      
-      setUser(userData);
+      api.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+      // Fetch current user details using the fresh token
+      const meResponse = await api.get('/api/auth/me');
+      const { id, username: userUsername, role: userRole } = meResponse.data;
+      setUser({ id, username: userUsername, role: userRole });
+
       return { success: true };
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.error || 'Login failed' 
+      localStorage.removeItem('token');
+      setUser(null);
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Login failed',
       };
     }
   };
@@ -66,7 +73,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData, userType) => {
     try {
       const endpoint = userType === 'consumer' ? '/api/auth/register/consumer' : '/api/auth/register/provider';
-      await axios.post(endpoint, userData);
+      await api.post(endpoint, userData);
       return { success: true };
     } catch (error) {
       return { 
@@ -78,6 +85,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
+    delete api.defaults.headers.common.Authorization;
     setUser(null);
   };
 

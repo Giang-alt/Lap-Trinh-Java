@@ -98,17 +98,17 @@ Frontend sẽ chạy tại: http://localhost:3000
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/login` - Đăng nhập
-- `POST /api/auth/register/consumer` - Đăng ký Data Consumer
-- `POST /api/auth/register/provider` - Đăng ký Data Provider
+- `POST /api/auth/login` - Đăng nhập-Giang
+- `POST /api/auth/register/consumer` - Đăng ký Data Consumer-Giang
+- `POST /api/auth/register/provider` - Đăng ký Data Provider-Giang
 
 ### Data Packages
-- `GET /api/data-packages` - Lấy danh sách gói dữ liệu
-- `GET /api/data-packages/{id}` - Lấy chi tiết gói dữ liệu
-- `GET /api/data-packages/search` - Tìm kiếm gói dữ liệu
-- `POST /api/data-packages` - Tạo gói dữ liệu mới
-- `PUT /api/data-packages/{id}` - Cập nhật gói dữ liệu
-- `DELETE /api/data-packages/{id}` - Xóa gói dữ liệu
+- `GET /api/data-packages` - Lấy danh sách gói dữ liệu-Giang
+- `GET /api/data-packages/{id}` - Lấy chi tiết gói dữ liệu-Điền
+- `GET /api/data-packages/search` - Tìm kiếm gói dữ liệu-Ngân
+- `POST /api/data-packages` - Tạo gói dữ liệu mới-Phúc
+- `PUT /api/data-packages/{id}` - Cập nhật gói dữ Phúc-Anh
+- `DELETE /api/data-packages/{id}` - Xóa gói dữ liệu-Long
 
 ## Cấu trúc Database
 
@@ -159,16 +159,3 @@ Frontend sẽ chạy tại: http://localhost:3000
 
 dashboards, charts,...
 
-### Mức Trung bình (Medium Level)
-- [ ] Hệ thống thanh toán
-- [ ] Bảo mật cơ bản
-- [ ] API cơ bản
-- [ ] Upload file dữ liệu
-- [ ] Hệ thống billing
-
-### Mức Nâng cao (Advanced Level)
-- [ ] Dashboard phân tích
-- [ ] AI gợi ý
-- [ ] API nâng cao
-- [ ] Bảo mật nâng cao
-- [ ] Báo cáo chi tiết

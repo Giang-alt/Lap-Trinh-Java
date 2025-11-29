@@ -23,7 +23,10 @@ const Navbar = () => {
         <BootstrapNavbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/">Trang chủ</Nav.Link>
-            <Nav.Link as={Link} to="/data-packages">Dữ liệu</Nav.Link>
+            {/* Chỉ hiển thị link "Dữ liệu" cho Consumer và Admin, không hiển thị cho Provider */}
+            {(!user || user.role === 'DATA_CONSUMER' || user.role === 'ADMIN') && (
+              <Nav.Link as={Link} to="/data-packages">Dữ liệu</Nav.Link>
+            )}
           </Nav>
           
           <Nav>

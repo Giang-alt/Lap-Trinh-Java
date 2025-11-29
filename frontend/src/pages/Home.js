@@ -1,8 +1,51 @@
 import React from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const Home = () => {
+  const { user } = useAuth();
+
+  // Xác định nút nào hiển thị dựa trên role
+  const renderActionButtons = () => {
+    // Nếu là Provider, chỉ hiển thị nút "Thêm dữ liệu"
+    if (user && user.role === 'DATA_PROVIDER') {
+      return (
+        <Button as={Link} to="/provider" variant="primary" size="lg">
+          Thêm dữ liệu
+        </Button>
+      );
+    }
+    
+    // Nếu là Admin, hiển thị cả 2 nút
+    if (user && user.role === 'ADMIN') {
+      return (
+        <>
+          <Button as={Link} to="/data-packages" variant="primary" size="lg" className="me-3">
+            Khám phá dữ liệu
+          </Button>
+          <Button as={Link} to="/admin" variant="outline-primary" size="lg">
+            Quản trị
+          </Button>
+        </>
+      );
+    }
+    
+    // Nếu là Consumer hoặc chưa đăng nhập, hiển thị nút "Khám phá dữ liệu"
+    return (
+      <>
+        <Button as={Link} to="/data-packages" variant="primary" size="lg" className="me-3">
+          Khám phá dữ liệu
+        </Button>
+        {!user && (
+          <Button as={Link} to="/register" variant="outline-primary" size="lg">
+            Tham gia ngay
+          </Button>
+        )}
+      </>
+    );
+  };
+
   return (
     <Container className="mt-4">
       <Row className="mb-5">
@@ -12,12 +55,7 @@ const Home = () => {
             <p className="lead mb-4">
               Chợ dữ liệu phân tích xe điện - Nơi kết nối dữ liệu và phân tích thông minh
             </p>
-            <Button as={Link} to="/data-packages" variant="primary" size="lg" className="me-3">
-              Khám phá dữ liệu
-            </Button>
-            <Button as={Link} to="/register" variant="outline-primary" size="lg">
-              Tham gia ngay
-            </Button>
+            {renderActionButtons()}
           </div>
         </Col>
       </Row>

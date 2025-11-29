@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button, Badge, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/axiosConfig';
 
 const DataPackages = () => {
   const [packages, setPackages] = useState([]);
@@ -21,7 +21,7 @@ const DataPackages = () => {
 
   const fetchDataPackages = async () => {
     try {
-      const response = await axios.get('/api/data-packages');
+      const response = await api.get('/api/data-packages');
       setPackages(response.data);
     } catch (err) {
       setError('Không thể tải danh sách dữ liệu');
@@ -41,7 +41,7 @@ const DataPackages = () => {
         }
       });
 
-      const response = await axios.get(`/api/data-packages/search?${params}`);
+      const response = await api.get(`/api/data-packages/search?${params}`);
       setPackages(response.data);
     } catch (err) {
       setError('Không thể tìm kiếm dữ liệu');
