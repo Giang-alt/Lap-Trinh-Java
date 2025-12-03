@@ -79,11 +79,9 @@ public class DataPackageService {
     
     @Transactional
     public void deleteDataPackage(Long id) {
-        // Kiểm tra gói dữ liệu có tồn tại không
         DataPackage dataPackage = dataPackageRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Data package not found with id: " + id));
         
-        // Xóa gói dữ liệu
         dataPackageRepository.deleteById(id);
     }
     
@@ -124,11 +122,9 @@ public class DataPackageService {
         return results;
     }
     /**
- * Cập nhật thông tin của một gói dữ liệu.
- *
- * @param id ID của gói dữ liệu cần cập nhật.
- * @param request DTO chứa thông tin mới.
- * @return Optional chứa gói dữ liệu đã được cập nhật, hoặc Optional rỗng nếu không tìm thấy.
+ * @param id
+ * @param request
+ * @return 
  */
 @Transactional
 public Optional<DataPackage> updateDataPackage(Long id, UpdateDataPackageRequest request) {

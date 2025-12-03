@@ -1,0 +1,16 @@
+STT,Chuc nang,Phan loai nguoi dung,Mo ta chi tiet,Trang thai,Ghi chu,Nguoi trien khai
+1,POST /api/auth/login,Admin/All,Dang nhap (tra token + thong tin nguoi dung),Da trien khai,,Giang
+2,POST /api/auth/register/consumer,Data Consumer,Dang ky tai khoan Data Consumer,Da trien khai,,Giang
+3,POST /api/auth/register/provider,Data Provider,Dang ky tai khoan Data Provider,Da trien khai,,Giang
+4,GET /api/data-packages,Data Consumer/Admin,Lay danh sach goi du lieu,Da trien khai,,Giang
+5,GET /api/data-packages/{id},Data Consumer/Admin,Lay chi tiet goi du lieu,Da trien khai,,Dien
+6,GET /api/data-packages/search,Data Consumer/Admin,Tim kiem goi du lieu theo bo loc,Da trien khai,,Ngan
+7,POST /api/data-packages,Data Provider/Admin,Tao goi du lieu moi,Da trien khai,,Phuc
+8,PUT /api/data-packages/{id},Data Provider/Admin,Cap nhat goi du lieu,Da trien khai,,Phuc - Anh
+9,DELETE /api/data-packages/{id},Data Provider/Admin,Xoa goi du lieu,Da trien khai,,Long
+10,GET /api/data-packages/by-provider/{providerId},Data Provider,Danh sach goi du lieu thuoc provider,Da trien khai,,Phuc
+11,GET /api/data-sources/by-provider/{providerId},Data Provider,Lay danh sach nguon du lieu theo provider,Da trien khai,,Phuc
+12,POST /api/data-sources/auto-create,Data Provider,Tu dong tao nguon du lieu mac dinh khi chua co,Da trien khai,,Phuc
+13,GET /api/auth/me,Admin/All,Tra thong tin nguoi dung dang dang nhap,Da trien khai,,Giang
+14,GET /api/users,Admin,Lay danh sach nguoi dung,Da trien khai,,(Chua phan cong)
+15,PUT /api/users/{id}/status,Admin,Cap nhat trang thai nguoi dung,Da trien khai,,(Chua phan cong)

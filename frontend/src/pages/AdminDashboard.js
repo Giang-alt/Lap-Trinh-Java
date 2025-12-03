@@ -75,6 +75,18 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleDeletePackage = async (packageId) => {
+    try {
+      await api.delete(`/api/data-packages/${packageId}`);
+
+      // Refresh dashboard data
+      fetchDashboardData();
+      setError('');
+    } catch (err) {
+      setError('Khong the xoa goi du lieu: ' + (err.response?.data?.error || err.message));
+    }
+  };
+
   const handleSuspendUser = async (userId) => {
     try {
       await api.put(`/api/users/${userId}/status`, { status: 'SUSPENDED' });
@@ -248,7 +260,15 @@ const AdminDashboard = () => {
                           >
                             Từ chối
                           </Button>
-                        </td>
+                        
+                          <Button 
+                            variant="outline-danger" 
+                            size="sm"
+                            className="ms-2"
+                            onClick={() => handleDeletePackage(pkg.id)}
+                          >
+                            Xóa
+                          </Button></td>
                       </tr>
                     ))}
                   </tbody>

@@ -1,10 +1,9 @@
 package com.evmarketplace.security;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,8 +13,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.evmarketplace.util.JwtUtil;
 import com.evmarketplace.entity.User;
+import com.evmarketplace.util.JwtUtil;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -57,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                // Chặn người dùng bị khóa/tạm khóa/kích hoạt sai trạng thái ngay cả khi token còn hạn
+                // Chặn người dùng bị khóa
                 if (userDetails instanceof User evUser) {
                     if (evUser.getStatus() != User.UserStatus.ACTIVE || !evUser.isAccountNonLocked()) {
                         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Account is inactive or suspended");
